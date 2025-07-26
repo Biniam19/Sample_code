@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country data</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=boy" />
+    <!-- Font Awesome Free CDN -->
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <style>
+        body {
+            font-family: "Raleway", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: weight;
+            font-style: normal;
+            font-siz: 22px;
+        }
+        .country-con{display: flex; flex-wrap: wrap;justify-content: center;gap: 10px;
+        padding: 5px; border: 0px solid red;}
+        @media (max-width){
+            .country-con{}
+        }
+        .country{border: 0px solid green;width: 25%;box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;position: relative;}
+        .country.near{scale: 0.8;}
+        .country.near::before{content:"Neighbouring country";position: absolute;bottom: 100%;left: 50%;transform: translateX(-50%);
+    text-align: center;color: #bfbfbf;font-weight: bolder;}    
+        @media (max-width: 800px){
+            .country{width:100%}
+        }
+        img{width: 100%;}
+        i{display: inline-block;padding-right:10px;}
+        p{vertical-align: center;}
+        .country-data{padding: 20px; padding-top: 0;}
+        h3{margin-bottom: 0;}
+        h4{color: #bfbfbf;margin: 0;}
+        .search{border : 0px solid red; display:flex;margin: 30px 0;justify-content: center;
+        gap: 10px;}
+        input{padding: 10px;border-radius: 8px;min-width: 200px;
+            border: 1px solid#a6a6a6}
+        button{border:none;background: red; color: white;padding: 10px;
+            min-width: 140px; border-radius: 8px;}    
+
+</style>
+</head>
+<body>
+    <h2 style="text-align: center;"> Search Countries By Name</h2>
+
+    <div class="search">
+        <input type="text" name="" id="sh">
+        <button id="aa" ">Search</button>
+
+    </div>
+    <section class="country-con">
+        
+    </section>    
+</body>
+
+<script>
+    (function(){
+        let container = document.querySelector(".country-con");
+        
+        let showCountry = function (dat, className=""){
+            let languages = Object.values(dat.languages)[0];
+            let currency = Object.values(dat.currencies)[0];
+            let currName = currency.name;
+            //currency = Object.values
+            let htmtxt = `
+            <article class="country ${className} " style="order:2">
+                <img src="${dat.flags.png}" alt="">
+                <div class= "country-data">
+                    <h3>${dat.name.common}</h4>
+                    <h4>${dat.region}</h3>
+                    <p>    
+                        <i class="fas fa-users"></i> ${(+dat.population/1000000).toFixed(1)}M
+                        People
+                    </p>    
+                    <p><i class="fas fa-language"></i> ${languages}</p>
+                    <p><i class="fas fa-money-bill"></i>${currName}</p>
+                    <p><i class="fa-solid fa-arrows-left-right"></i>${dat.borders?.join(", ")||"no broders"}</p>
+                    <p><i class="fas fa-phone"></i></p>
+
+                </div>
+
+            </article>`;
+            container.insertAdjacentHTML("beforeend",htmtxt);
+        };
+
+    /* // without using promises;    
+        function fetchCountry(url,country, className="", neb){
+        let dat2;
+        let x1 = new XMLHttpRequest();
+        x1.open("GET", url + country);
+        x1.send();
+
+        x1.addEventListener("load", function() {
+            if(x1.status == 200){
+                [dat2] = JSON.parse(this.responseText);
+                if(neb){
+                    container.innerHTML = "";
+                }
+                showCountry(dat2, className);
+                console.log(dat2);
+
+                if(neb) {
+                    let neibor = dat2.borders;
+
+                    if(!neibor) return;
+                    
+                    for(const r of neibor){
+                        fetchCountry("https://restcountries.com/v3.1/alpha/", r, "near", neb = false);
+                    }
+                }
+
+            }else{
+            alert("Wrong county name");
+            return;
+        }
+        });
+        }
+        */
+
+
+
+
+       let promise = function(url,country,className, neb = true){
+          return new Promise((resolve,reject)=>{
+                let dat2;
+                let x1 = new XMLHttpRequest();
+                x1.open("GET", url + country);
+                x1.send();
+
+                x1.addEventListener("load", function() {
+                    if(x1.status == 200){
+                        [dat2] = JSON.parse(this.responseText);
+                        if(neb){
+                            container.innerHTML = "";
+                        }
+                        resolve({dt1 : dat2, dt2 : className});
+                        console.log(dat2);
+
+                        if(neb) {
+                            let neibor = dat2.borders;
+
+                            if(!neibor) return;
+                            
+                            Promise.all(neibor.map(code=>{
+                              return  promise("https://restcountries.com/v3.1/alpha/", code, "near", false);
+                            })
+                          ).then(result=>{
+                               result.forEach(({dt1,dt2})=>{
+                                showCountry(dt1,dt2);
+                               })
+                          }).catch(err=>{
+                            console.error(err);
+                          })
+                                
+                            
+                        }
+
+                    }else{
+                    alert("Wrong county name");
+                    reject("Couldn't fetch country");
+                    return;
+                   }
+
+           });
+        });
+    }    
+    
+
+
+    
+
+    document.getElementById("aa").onclick = function(){
+        let c = document.querySelector("#sh").value;
+        if(c == ""){
+            alert("Enter the fucking country name, motherfucker");
+            return;
+        }
+       //fetchCountry("https://restcountries.com/v3.1/name/", c, "", true);
+
+       promise("https://restcountries.com/v3.1/name/", c, "", true)
+       .then((data)=>{
+            showCountry(data.dt1, data.dt2);
+       })
+       .catch(err => console.warn(err)); 
+    }
+    
+}
+
+)();
+
+
+
+
+</script>
+</html>
