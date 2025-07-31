@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{ font-family: sans-serif; padding: 2rem;}
+        #container{
+            display:flex;
+            border: 1px solid #ddd;
+            justify-content: center;
+            gap: 2rem;
+        }
+        #container > div{ 
+            border: 2px dashed #888;
+            padding: 5px;
+            border-radius: 8px;
+            flex: 1;
+        }
+        #teachers{
+            border: 2px dashed #888;
+            padding: 5px;
+            padding: 1rem;
+        }
+        #teachers > div{ 
+            background: dodgerblue;
+            color:white;
+            padding: 8px;
+            margin:5px;
+            border-radius:8px;
+            max-width: 300px;
+        }
+        .draggable{
+            cursor: grab; 
+            background: dodgerblue;
+            color:white; 
+            padding: 8px;
+            margin:5px 30px;
+            border-radius:8px;
+        }
+        #classes {
+            display:flex;
+            gap: 5px; 
+            flex-direction: column;
+        }
+        #classes > div{ 
+            flex-grow: 1;
+            margin: 5px;
+            color: white;
+            border: 1px solid #f1f1f1;
+            min-height: 50px;
+        }
+        p{
+            background: red;
+            margin:0;
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        
+            
+        
+    </style>
+</head>
+<body>
+
+    <h1> Assign Teachers Class</h1>
+
+    <div id="container">
+    
+        <div id="teachers">
+            <h2>Teachers</h2>
+            <div id="t1" class="draggable" draggable="true" >Biniam: Biology</div>
+            <div id="t2" class="draggable" draggable="true";>Tedros: Physics</div>
+            <div id="t3" class="draggable" draggable="true">Abel: Java</div>
+            <div id="t4" class="draggable" draggable="true">Sele: computer</div>
+        </div>
+
+        <div id="classes">
+            <h2>Classes</h2>
+            <div id="c1"><p>Class A</p></div>
+            <div id="c2"><p>Class B</p></div>
+            <div id="c3"><p>Class C</p></div>
+            <div id="c4"><p>Class D</p></div>
+            <div id="c5"><p>Class E</p></div>
+            
+            
+        </div>
+    </div>
+
+    <div ondragover="(event)=>event.preventDefault();" style="width:200px;height:200px;border:1px solid red">
+
+    </div>
+<script>
+
+function drStart(e){
+    e.effectAllowed = "move";
+    let b = e.target;
+    let idd = b.id == "" ? b.dataset.id: b.id;
+    console.log(idd);
+    e.dataTransfer.setData("text/plain",idd);
+    console.log("start");
+   
+}
+
+function drOver(ev){
+    ev.preventDefault();
+    ev.dropEffect = 'move';
+    console.log("over");
+}
+
+function drEnter(ev){
+//ev.
+}
+function drDrop(ev){
+    ev.preventDefault();
+    
+    dtarget = document.getElementById(ev.currentTarget.id);
+    let dt = ev.dataTransfer.getData("text/plain") ;
+    let ele = document.getElementById(dt);
+    let [p] = Array.from(dtarget.children).filter((item)=>{
+        return (item.dataset.id == dt)
+    })
+    if(p) return;
+    let newEle = ele.cloneNode(true);
+    newEle.dataset.id = dt;
+    newEle.removeAttribute("id");
+    dtarget.appendChild(newEle);
+    console.log(dt);
+}
+
+
+
+
+let teacher = document.getElementById("teachers");
+let classs = document.getElementById("classes");
+
+teacher.addEventListener("drop",drDrop);
+//teacher.addEventListener("dragover", drOver);
+
+Array.from(teacher.children).forEach((ele)=>{
+    ele.addEventListener("dragstart", drStart);
+    ele.addEventListener("mousedown", (e) =>{
+        document.getElementById(e.target.id).style.cursor = "grabbing";
+    });
+    ele.addEventListener("mouseup", (e) =>{
+        document.getElementById(e.target.id).style.cursor = "";
+    });
+     ele.addEventListener("dragleave", (e) =>{
+        document.getElementById(e.target.id).style.cursor = "";
+    });
+});
+Array.from(classs.children).forEach((ele)=>{
+    ele.addEventListener("dragover", drOver);
+    ele.addEventListener("dragstart", drStart);
+    ele.addEventListener("drop", drDrop);
+});
+
+
+</script>
+</body>
+</html>
