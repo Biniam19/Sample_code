@@ -8,7 +8,6 @@
         body{ font-family: sans-serif; padding: 2rem;}
         #container{
             display:flex;
-            border: 1px solid #ddd;
             justify-content: center;
             gap: 2rem;
         }
@@ -22,6 +21,7 @@
             border: 2px dashed #888;
             padding: 5px;
             padding: 1rem;
+            
         }
         #teachers > div{ 
             background: dodgerblue;
@@ -31,6 +31,7 @@
             border-radius:8px;
             max-width: 300px;
         }
+        
         .draggable{
             cursor: grab; 
             background: dodgerblue;
@@ -38,7 +39,25 @@
             padding: 8px;
             margin:5px 30px;
             border-radius:8px;
+            position: relative;
         }
+
+        button{
+            border:none; 
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            right:5px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        #teachers button{ display: none;}
+
         #classes {
             display:flex;
             gap: 5px; 
@@ -71,10 +90,18 @@
     
         <div id="teachers">
             <h2>Teachers</h2>
-            <div id="t1" class="draggable" draggable="true" >Biniam: Biology</div>
-            <div id="t2" class="draggable" draggable="true";>Tedros: Physics</div>
-            <div id="t3" class="draggable" draggable="true">Abel: Java</div>
-            <div id="t4" class="draggable" draggable="true">Sele: computer</div>
+            <div id="t1" class="draggable" draggable="true" >Biniam: Biology
+                <button onclick="remv(event)">X</button>
+            </div>
+            <div id="t2" class="draggable" draggable="true";>Tedros: Physics
+                <button onclick="remv(event)">X</button>
+            </div>
+            <div id="t3" class="draggable" draggable="true">Abel: Java
+                <button onclick="remv(event)">X</button>
+            </div>
+            <div id="t4" class="draggable" draggable="true">Sele: computer
+                <button onclick="remv(event)">X</button>
+            </div>
         </div>
 
         <div id="classes">
@@ -89,10 +116,17 @@
         </div>
     </div>
 
-    <div ondragover="(event)=>event.preventDefault();" style="width:200px;height:200px;border:1px solid red">
-
-    </div>
 <script>
+
+let teacher = document.getElementById("teachers");
+let classs = document.getElementById("classes");
+let btns = [];
+
+function remv(e){
+    e.stopPropagation();
+    e.preventDefault();
+    e.currentTarget.closest(".draggable").remove();
+}
 
 function drStart(e){
     e.effectAllowed = "move";
@@ -133,22 +167,20 @@ function drDrop(ev){
 
 
 
-let teacher = document.getElementById("teachers");
-let classs = document.getElementById("classes");
-
 teacher.addEventListener("drop",drDrop);
 //teacher.addEventListener("dragover", drOver);
 
-Array.from(teacher.children).forEach((ele)=>{
-    ele.addEventListener("dragstart", drStart);
+Array.from(teacher.children).forEach((ele,i)=>{
+    ele.addEventListener("dragstart", drStart); 
     ele.addEventListener("mousedown", (e) =>{
-        document.getElementById(e.target.id).style.cursor = "grabbing";
+        document.getElementById(e.currentTarget.id).style.cursor = "grabbing";
     });
     ele.addEventListener("mouseup", (e) =>{
-        document.getElementById(e.target.id).style.cursor = "";
+        console.log("biniam");
+        document.getElementById(e.currentTarget.id).style.cursor = "";
     });
      ele.addEventListener("dragleave", (e) =>{
-        document.getElementById(e.target.id).style.cursor = "";
+        document.getElementById(e.currentTarget.id).style.cursor = "";
     });
 });
 Array.from(classs.children).forEach((ele)=>{
@@ -156,7 +188,6 @@ Array.from(classs.children).forEach((ele)=>{
     ele.addEventListener("dragstart", drStart);
     ele.addEventListener("drop", drDrop);
 });
-
 
 </script>
 </body>
