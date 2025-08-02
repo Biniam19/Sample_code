@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Simple Tabs Without ARIA</title>
+<style>
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+  }
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    background: #eee;
+  }
+  .tab.active {
+    background: white;
+    border-color: #ccc;
+    border-bottom: 2px solid white;
+  }
+  .tab-content {
+    
+    padding: 15px;
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+
+  .animate.active {
+  animation-name: up;
+  animation-duration: 0.5s;      /* example duration */
+  animation-timing-function: ease-out;  /* example easing */
+  animation-fill-mode: forwards; /* keep the final state */
+}
+
+@keyframes up {
+  0% {
+    transform: translateY(-30%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <div class="tab  active" data-tab="1">Tab 1</div>
+  <div class="tab" data-tab="2">Tab 2</div>
+  <div class="tab" data-tab="3">Tab 3</div>
+</div>
+
+<div class="tab-contents">
+  <div class="tab-content  animate active" data-tab="1">
+    <h3>Content 1</h3>   
+    <p>Content for Tab 1.</p>
+  </div>
+  <div class="tab-content animate" data-tab="2">
+    <h3> Content 2</h3>
+    <p>Content for Tab 2.</p>
+  </div>
+  <div class="tab-content animate" data-tab="3">
+    <h3>Content 3</h3>
+    <p>Content for Tab 3.</p>
+  </div>
+</div>
+
+<script>
+let tabs = document.querySelectorAll(".tab");
+let content = document.querySelectorAll(".tab-content");
+
+tabs.forEach( (tab) => {
+tab.addEventListener("click", () =>{
+    const target = tab.dataset.tab;
+    console.log("biniam " + target);
+    tabs.forEach(a => a.classList.remove("active"));
+    content.forEach(a => a.classList.remove("active"));
+
+    tab.classList.add("active");
+    let panel = document.querySelector(`.tab-content[data-tab="${target}"]`);
+    if(panel) panel.classList.add("active")
+})
+});
+</script>
+
+</body>
+</html>
