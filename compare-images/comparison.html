@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* {box-sizing: border-box;}
+
+.img-comp-container {
+  position: relative;
+  width: 300px;
+  height: 200px; /*should be the same height as the images*/
+}
+
+.img-comp-img {
+  position: absolute;
+  width: auto;
+  height: auto;
+  overflow:hidden;
+}
+
+.img-comp-img img {
+  display:block;
+  vertical-align:middle;
+}
+
+.img-comp-slider {
+  position: absolute;
+  z-index:9;
+  cursor: ew-resize;
+  /*set the appearance of the slider:*/
+  width: 40px;
+  height: 40px;
+  background-color: #2196F3;
+  opacity: 0.7;
+  border-radius: 50%;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Compare Two Images</h1>
+
+<p>Click and slide the blue slider to compare two images:</p>
+
+<div class="img-comp-container">
+  <div class="img-comp-img">
+    <img src="img_snow.jpg" width="300" height="200">
+  </div>
+  <div class="img-comp-img img-comp-overlay">
+    <img src="img_forest.jpg" width="300" height="200">
+  </div>
+</div>
+
+<script>
+
+function initComparisons(){
+    let x;
+    x = document.querySelectorAll(".img-comp-overlay");
+
+    x.forEach((e) => {
+        compareImage(e);
+    } 
+);
+
+function compareImage(img){
+    let slider, w, h, clicked;
+
+    w = img.offsetWidth;
+    h = img.offsetHeight;
+    img.style.width = (w / 2) + "px"; 
+    slider = document.createElement("div");
+    slider.setAttribute("class", "img-comp-slider");
+    img.parentElement.insertBefore(slider, img);
+    slider.style.left = `${(w / 2) - (slider.offsetWidth / 2)}px`;
+    slider.style.top = `${(h / 2) - (slider.offsetHeight / 2)}px`;
+
+    slider.addEventListener("mousedown", slideReady);
+    slider.addEventListener("mouseup", slideFinish);
+    slider.addEventListener("touchstart", slideReady);
+    slider.addEventListener("touchend", slideFinish);
+
+    function slideReady(e){
+        e.preventDefault();
+        clicked = 1;
+        slider.addEventListener("mousemove", moveSlider);
+        slider.addEventListener("touchmove", moveSlider);
+
+        }
+
+    function slideFinish(e){
+        clicked = 0;
+    }    
+
+    function moveSlider(e){
+        let pos = getCursor(e), l;
+        if(!clicked) {console.log("bini");return;}
+
+        l = Math.max(0, Math.min(pos, w));
+        //if (pos < 0) pos = 0;
+        //if (pos > w) pos = w;
+        
+        slide(l);
+    }
+    
+
+    function getCursor(e){
+      let x, a = img.getBoundingClientRect();
+      
+      if(e.touches){
+        x = e.touches[0].clientX - a.left;
+      }else{
+      x = e.clientX - a.left;
+      }
+      return x 
+    }
+
+    function slide(x){
+       img.style.width = x + "px";
+       slider.style.left = `${img.offsetWidth - (slider.offsetWidth / 2)}px`
+    }
+
+
+    
+}
+
+
+}
+
+/*Execute a function that will execute an image compare function for each element with the img-comp-overlay class:*/
+initComparisons();
+</script>
+
+</body>
+</html>
