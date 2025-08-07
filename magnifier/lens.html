@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>4-column Masonry Gallery with Variable Image Sizes</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #fafafa;
+    height: 1400px;
+  }
+  .con{
+    position: relative;
+    background: black;
+    width: 300px;
+    height: 300px;
+  }
+  .lens{
+    position: absolute;
+    z-index: 1;
+    border: 1px solid red;
+    width: 40px;
+    height: 40px;
+  }
+  
+</style>
+
+</head>
+<body>
+
+<h2>4-Column Masonry Gallery (Variable Heights)</h2>
+<h2>4-Column Masonry Gallery (Variable Heights)</h2>
+<h2>4-Column Masonry Gallery (Variable Heights)</h2>
+
+<div class="con" onmousemove="locate(event)">
+  <div class="lens"></div>
+</div>
+
+<script>
+ let con = document.querySelector(".con");
+ let lens =  document.querySelector(".lens");
+
+ function locate(e){
+  let pos, x, y;
+  pos = getCursor(e);
+  x = pos.x - (lens.offsetWidth/2);
+  y = pos.y - (lens.offsetHeight/2)
+  
+  /*
+  if(x > con.offsetWidth - lens.offsetWidth) x =  con.offsetWidth - lens.offsetWidth;
+  if(y > con.offsetHeight - lens.offsetHeight) y = con.offsetHeight - lens.offsetWidth;
+  if(x < 0) x = 0;
+  if(y < 0) y = 0;
+  */
+  x = Math.max(0, Math.min(x, con.offsetWidth - lens.offsetWidth));
+  y = Math.max(0 , Math.min(y, con.offsetHeight - lens.offsetHeight));
+  
+  lens.style.left = `${x}px`;
+  lens.style.top = `${y}px`;
+ }
+
+ function getCursor(e){
+    
+    let c = con.getBoundingClientRect();
+    // clienX relative to the vieport and c is also relative to the viewport
+    let x = e.clientX - c.left;
+    let y = e.clientY - c.top;
+    /*
+    // pageX relative to the document including the scrolled distance
+      let x = e.pageX - c.left - window.pageXOffset;
+      let Y = e.pageY - c.top - window.pageYOffset;
+    */
+
+
+    return {x : x, y : y}
+ }
+
+</script>
+</body>
+</html>

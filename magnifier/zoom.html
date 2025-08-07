@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* {box-sizing: border-box;}
+
+.img-zoom-container {
+  position: relative;
+}
+
+.img-zoom-lens {
+  position: absolute;
+  border: 1px solid red;
+  /*set the size of the lens:*/
+  width: 100px;
+  height: 100px;
+}
+
+.img-zoom-result {
+  border: 1px solid #d4d4d4;
+  /*set the size of the result div:*/
+  width: 300px;
+  height: 300px;
+}
+</style>
+</head>
+<body>
+
+<h1>Image Zoom</h1>
+
+<p>Mouse over the image:</p>
+
+<div class="img-zoom-container">
+  <img id="myimage" src="img_girl.jpg" width="300" height="240">
+  <div id="myresult" class="img-zoom-result"></div>
+</div>
+
+
+<script>
+ function zoomImage(imgId, resId){
+    let img, lens, result, cx, cy;
+    img = document.getElementById(imgId);
+    result = document.getElementById(resId);
+    lens = document.createElement("div");
+    lens.setAttribute("class", "img-zoom-lens");
+    img.parentElement.insertBefore(lens,img);
+
+    cx = result.offsetWidth / lens.offsetWidth;
+    cy = result.offsetHeight / lens.offsetHeight;
+
+    result.style.backgroundImage = `url(${img.src})`;
+    result.style.backgroundSize = `${(cx * img.width)}px ${cy * img.height}px`;
+
+    img.addEventListener("mousemove", move);
+    lens.addEventListener("mousemove", move);
+
+    img.addEventListener("touchmove", move);
+    lens.addEventListener("touchmove", move);
+    
+function move(e){
+        let pos, x, y;
+
+        pos = getCursor(e);
+        x = pos.x - lens.offsetWidth/2;
+        y = pos.y - lens.offsetHeight/2;
+
+        x = Math.max(0, Math.min(x, img.offsetWidth - lens.offsetWidth));
+        y = Math.max(0, Math.min(y, img.offsetHeight - lens.offsetHeight))
+
+        lens.style.left = x + "px";
+        lens.style.top = y + "px";
+
+        result.style.backgroundPosition = `-${cx * x}px -${cy * y}px`;
+    }
+
+    function getCursor(e){
+        let x, y, c = img.getBoundingClientRect();
+        
+        if(e.touches){
+            x = e.touches[0].clientX - c.left;
+            y = e.touches[0].clientY - c.top;
+        }else{
+            x = e.clientX - c.left;
+            y = e.clientY - c.top;
+        }
+        return {x : x, y : y}
+    }
+ }
+
+// Initiate zoom effect:
+zoomImage("myimage", "myresult");
+</script>
+
+</body>
+</html>
