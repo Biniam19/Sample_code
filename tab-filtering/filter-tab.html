@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Filter System</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            padding: 2rem;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Filter tabs */
+        .filter-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 1rem;
+        }
+        
+        .filter-tab {
+            padding: 0.75rem 1.5rem;
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-tab:hover {
+            background-color: #e9ecef;
+        }
+        
+        .filter-tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        /* Filter items */
+        .filter-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .filter-item {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .filter-item:hover {
+            transform: translateY(-4px);
+        }
+        
+        .filter-item.hidden {
+            display: none;
+        }
+        
+        .filter-item-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .filter-item-content {
+            padding: 1.5rem;
+        }
+        
+        .filter-item-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .filter-item-category {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: #e9ecef;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-tabs {
+                justify-content: center;
+            }
+            
+            .filter-items {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="filter-tabs" id="filterTabs">
+            <button class="filter-tab active" data-category="all">All</button>
+            <button class="filter-tab" data-category="design">Design</button>
+            <button class="filter-tab" data-category="development">Development</button>
+            <button class="filter-tab" data-category="marketing">Marketing</button>
+        </div>
+        
+        <div class="filter-items" id="filterItems">
+            <div class="filter-item" data-category="design">
+                <img src="https://source.unsplash.com/random/600x400/?design" alt="Design project" class="filter-item-img">
+                <div class="filter-item-content">
+                    <h3 class="filter-item-title">UI/UX Design</h3>
+                    <span class="filter-item-category">Design</span>
+                    <p>Beautiful user interface design for mobile application.</p>
+                </div>
+            </div>
+            
+            <div class="filter-item" data-category="development">
+                <img src="https://source.unsplash.com/random/600x400/?code" alt="Development project" class="filter-item-img">
+                <div class="filter-item-content">
+                    <h3 class="filter-item-title">Web Application</h3>
+                    <span class="filter-item-category">Development</span>
+                    <p>Full-stack web application with modern technologies.</p>
+                </div>
+            </div>
+            
+            <div class="filter-item" data-category="marketing">
+                <img src="https://source.unsplash.com/random/600x400/?marketing" alt="Marketing project" class="filter-item-img">
+                <div class="filter-item-content">
+                    <h3 class="filter-item-title">Social Campaign</h3>
+                    <span class="filter-item-category">Marketing</span>
+                    <p>Successful social media marketing campaign.</p>
+                </div>
+            </div>
+            
+            <div class="filter-item" data-category="design">
+                <img src="https://source.unsplash.com/random/600x400/?branding" alt="Design project" class="filter-item-img">
+                <div class="filter-item-content">
+                    <h3 class="filter-item-title">Brand Identity</h3>
+                    <span class="filter-item-category">Design</span>
+                    <p>Complete brand identity design for startup company.</p>
+                </div>
+            </div>
+            
+            <div class="filter-item" data-category="development">
+                <img src="https://source.unsplash.com/random/600x400/?mobile" alt="Development project" class="filter-item-img">
+                <div class="filter-item-content">
+                    <h3 class="filter-item-title">Mobile App</h3>
+                    <span class="filter-item-category">Development</span>
+                    <p>Cross-platform mobile application development.</p>
+                </div>
+            </div>
+            
+            <div class="filter-item" data-category="marketing">
+                <img src="https://source.unsplash.com/random/600x400/?seo" alt="Marketing project" class="filter-item-img">
+                <div class="filter-item-content">
+                    <h3 class="filter-item-title">SEO Strategy</h3>
+                    <span class="filter-item-category">Marketing</span>
+                    <p>Search engine optimization strategy implementation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       document.addEventListener("DOMContentLoaded", function (e) {
+          let filter_tab = document.getElementById("filterTabs");
+          let filter_items = document.querySelectorAll(".filter-item");
+
+          
+
+          filter_tab.addEventListener("click", function (e) {
+            if( e.target.classList.contains("filter-tab")){
+                 let category = e.target.dataset.category;
+                filter_tab.querySelectorAll(".filter-tab").forEach((tab) => {
+                    tab.classList.remove("active");
+                })
+                e.target.classList.add("active");
+
+                filterItems(category);
+            }
+          })
+
+          function filterItems(c){
+               filter_items.forEach((item) => {
+                  item.classList.toggle("hidden", !(c === "all" || c === item.dataset.category))
+               })
+          }
+
+          filterItems("all");
+       }); 
+    </script>
+</body>
+</html>
