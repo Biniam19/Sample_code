@@ -1,78 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Progress Bar with requestAnimationFrame</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 40px;
-  }
-  .progress-container {
-    width: 400px;
-    height: 30px;
-    background: #ddd;
-    border-radius: 15px;
-    overflow: hidden;
-    position: relative;
-  }
-  .progress-bar {
-    height: 100%;
-    width: 0;
-    background: #4caf50;
-    border-radius: 15px 0 0 15px;
-    transition: width 0.1s ease-out;
-  }
-  .progress-text {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    text-align: center;
-    line-height: 30px;
-    font-weight: bold;
-    color: #333;
-    user-select: none;
-  }
-</style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Progress Bar with requestAnimationFrame</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 40px;
+      }
+      .progress-container {
+        width: 400px;
+        height: 30px;
+        background: #ddd;
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0;
+        background: #4caf50;
+        border-radius: 15px 0 0 15px;
+      }
+      .progress-text {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        text-align: center;
+        line-height: 30px;
+        font-weight: bold;
+        color: #333;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="btn">Cancel</button>
+    <button id="res">Restart</button>
+    <h2>Progress Bar up to 70%</h2>
 
-<h2>Progress Bar up to 70%</h2>
-<div class="progress-container">
-  <div class="progress-bar"></div>
-  <div class="progress-text">0%</div>
-</div>
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+      <div class="progress-text">0%</div>
+    </div>
 
-<script>
-    function progress(maxP, dur){
-        let maxParcent = maxP;
+    <script>
+      function progress(start, end, dur) {
+        let startValue = start;
+        let endValue = end;
         let currentPercent;
         let duration = dur;
+        let reverse = false;
         let startTime;
+        let progress;
         let elapsed;
+        let lastElapsed = 0;
+        let easedProgress;
+        let isPaused = false;
+        let timeout;
         let bar = document.querySelector(".progress-bar");
         let text = document.querySelector(".progress-text");
+        let btn = document.getElementById("btn");
+        let res = document.getElementById("res");
 
-        function animateProgress(timestam){
-            if(!startTime) startTime = timestam;
+        function animateProgress(timestam) {
+          if (!startTime) startTime = timestam;
 
-            elapsed = timestam - startTime;
-            currentPercent = Math.min(maxParcent, (elapsed / duration) * maxParcent);
-            bar.style.width = currentPercent + "%";
-            text.innerText = Math.floor(currentPercent);
+          elapsed = timestam - startTime + lastElapsed;
+          progress = Math.min(elapsed / duration, 1);
+          easedProgress = easeInOutCubic(progress);
+          currentPercent = startValue + (endValue - startValue) * easedProgress;
+          bar.style.width = currentPercent + "%";
+          text.innerText = Math.floor(currentPercent) + "%";
 
-            if( currentPercent < maxParcent){
-                requestAnimationFrame(animateProgress);
-            }
+          if (progress < 1) {
+            timeout = requestAnimationFrame(animateProgress);
+          }
         }
 
-        requestAnimationFrame(animateProgress);
-    }
+        function easeInOutCubic(t) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
 
-    progress(80, 3000)
-</script>
-</body>
+        function pause() {
+          if (isPaused) return;
+             isPaused = true;
+          if (timeout) {
+            window.cancelAnimationFrame(timeout);
+          }
+          if (startTime) {
+            lastElapsed += performance.now() - startTime;
+          }
+        }
+
+        function restart() {
+          if (!isPaused) return;
+          isPaused = false;
+          startTime = null;
+          console.log(currentPercent);
+          timeout = requestAnimationFrame(animateProgress);
+        }
+
+        btn.addEventListener("click", pause);
+        res.addEventListener("click", restart);
+        timeout = requestAnimationFrame(animateProgress);
+      }
+
+      progress(0, 80, 2000);
+    </script>
+  </body>
 </html>
